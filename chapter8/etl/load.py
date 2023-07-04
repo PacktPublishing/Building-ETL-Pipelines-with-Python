@@ -1,8 +1,11 @@
 # import relevant modules
 import psycopg2
 
-def load_data(data, table_name):
-
+def init_conn():
+    """
+    Initialize Postgre connection
+    :return: postgre cursor object
+    """
     # establish connection to the Postgresql database
     conn = psycopg2.connect(
         database="your_database_name",
@@ -14,55 +17,70 @@ def load_data(data, table_name):
 
     # create a cursor object for running SQL queries
     cur = conn.cursor()
+    print('successful creation of cursor object.')
 
-    # chicago_dmv.Vehicle PSQL
-    insert_query_vehicle = '''INSERT INTO chicago_dmv.Vehicle       
-                            (CRASH_UNIT_ID,  
-                            CRASH_ID,  
-                            CRASH_DATE,  
-                            VEHICLE_ID,  
-                            VEHICLE_MAKE,  
-                            VEHICLE_MODEL,  
-                            VEHICLE_YEAR,  
-                            VEHICLE_TYPE) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
+    return conn, cur
 
-    # chicago_dmv.Person PSQL
-    insert_query_person = '''INSERT INTO chicago_dmv.Person (PERSON_ID,  
-                            CRASH_ID,  
-                            CRASH_DATE,  
-                            PERSON_TYPE,  
-                            VEHICLE_ID,  
-                            PERSON_SEX,  
-                            PERSON_AGE) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s);'''
+# suggested continued learning: this function can be modified to be fully dynamic
+def load_data(cur, df, postgre_table, postgre_schema):
+    """
+    Load transformed data into respective PostgreSQL Table
+    :param cur: posgre cursor object
+    :return: cursor object
+    """
+    insert_query = f"INSERT INTO {postgre_table} {postgre_schema};"
 
-    # chicago_dmv.Crash PSQL
-    insert_query_crash = '''INSERT INTO chicago_dmv.Crash (CRASH_UNIT_ID,  
-                            CRASH_ID,  
-                            PERSON_ID,  
-                            VEHICLE_ID,  
-                            NUM_UNITS,  
-                            TOTAL_INJURIES) 
-                            VALUES (%s, %s, %s, %s, %s, %s);'''
-
+    # insert transformed data into PostgreSQL table
+    # TODO: REFACTOR TO MAKE SENSE - VERY SLOW / POOR USE OF CPUs
     for index, row in df.iterrows():
-        # vehicles
-        values_vehicle = (row['CRASH_UNIT_ID'],
-                          row['CRASH_ID'],
-                          row['CRASH_DATE'],
-                          row['VEHICLE_ID'],
-                          row['VEHICLE_MAKE'],
-                          row['VEHICLE_MODEL'],
-                          row['VEHICLE_YEAR'],
-                          row['VEHICLE_TYPE'])
+
+        if postgre_table == 'chicago_dmv.Crash':
+            insert_values = (row['CRASH_UNIT_ID'],
+                              row['CRASH_ID'],
+                              row['PERSON_ID'],
+                              row['VEHICLE_ID'],
+                              row['NUM_UNITS'],
+                              row['TOTAL_INJURIES'])
+
+        elif postgre_table == 'chicago_dmv.Vehicle':
+            insert_values = (row['CRASH_UNIT_ID'],
+                              row['CRASH_ID'],
+                              row['CRASH_DATE'],
+                              row['VEHICLE_ID'],
+                              row['VEHICLE_MAKE'],
+                              row['VEHICLE_MODEL'],
+                              row['VEHICLE_YEAR'],
+                              row['VEHICLE_TYPE'])
+
+        elif postgre_table == 'chicago_dmv.Person':
+            insert_values = (row['PERSON_ID'],
+                              row['CRASH_ID'],
+                              row['CRASH_DATE'],
+                              row['PERSON_TYPE'],
+                              row['VEHICLE_ID'],
+                              row['PERSON_SEX'],
+                              row['PERSON_AGE'])
+
+        else:
+            raise ValueError(f'Postgre Data Table {postgre_table} does not exist in this pipeline.')
 
         # Insert data int
-        cur.execute(insert_query_vehicle, values_vehicle)
+        cur.execute(insert_query, insert_values)
 
-    # Commit the changes to the database
+    # Commit all changes to the database
     conn.commit()
 
     # Close the cursor and database connection
     cur.close()
     conn.close()
+
+def close_conn(cur):
+    """
+    Closing Postgre connection
+    :param cur: posgre cursor object
+    :return: none
+    """
+
+    # Close the cursor and database connection
+    cur.close()
+    print('successful closing of cursor object.')
