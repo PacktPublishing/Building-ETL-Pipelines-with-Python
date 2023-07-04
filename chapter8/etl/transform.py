@@ -2,7 +2,7 @@
 import pandas as pd
 
 # transform data
-def transform_data(df):
+def transform_data(df: object) -> object:
     """
        Simple Transformation Function in Python with Error Handling
        :param df: pandas dataframe, extracted data

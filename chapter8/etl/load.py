@@ -16,7 +16,7 @@ print('successful creation of cursor object.')
 
 
 # suggested continued learning: this function can be modified to be fully dynamic
-def load_data(cur, df, postgre_table, postgre_schema):
+def load_data(df: object, postgre_table: object, postgre_schema: object) -> object:
     """
     Load transformed data into respective PostgreSQL Table
     :param cur: posgre cursor object

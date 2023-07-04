@@ -2,7 +2,7 @@
 import pandas as pd
 
 # extract data
-def extract_data(filepath):
+def extract_data(filepath: object) -> object:
     """
        Simple Extract Function in Python with Error Handling
        :param filepath: str, file path to CSV data
