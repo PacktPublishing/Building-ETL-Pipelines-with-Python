@@ -1,0 +1,17 @@
+# Configuration for a Basic Data Pipeline
+pipeline:
+  name: My First Data Pipeline
+  version: 1.0
+
+# DISCLAIMER: modify the following code to match your local Postgre instance
+postgresql:
+  host: localhost
+  port: 5432
+  username: postgres
+  password: mypassword
+  database_name: chicago_dmv
+
+# Chicago Data file paths
+crash_filepath: data/traffic_crashes.csv
+vehicle_filepath: data/traffic_crash_vehicle.csv
+people_filepath: data/traffic_crash_people.csv
