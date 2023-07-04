@@ -14,13 +14,13 @@ def extract_data(crash_filepath="data/traffic_crashes.csv",
     """
     try:
         # Read the traffic crashes CSV file and store it in a dataframe
-        df_crashes = pd.read_csv(crash_filepath)
+        crashes_df = pd.read_csv(crash_filepath)
 
         # Read the traffic crash vehicle CSV file and store it in a dataframe
-        df_vehicles = pd.read_csv(vehicle_filepath)
+        vehicles_df = pd.read_csv(vehicle_filepath)
 
         # Read the traffic crash People CSV file and store it in a dataframe
-        df_people = pd.read_csv(people_filepath)
+        people_df = pd.read_csv(people_filepath)
 
     # Handle exception if any of the files are missing
     except FileNotFoundError as e:
@@ -30,4 +30,4 @@ def extract_data(crash_filepath="data/traffic_crashes.csv",
     except Exception as e:
         print(f"Error: {e}")
 
-    return [df_crashes, df_vehicles, df_people]
+    return [crashes_df, vehicles_df, people_df]
