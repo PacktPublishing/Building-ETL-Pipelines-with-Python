@@ -1,8 +1,6 @@
 # import relevant modules
 import psycopg2
 
-# DISCLAIMER: modify the following code to match your local Postgre instance
-
 def load_data(data, table_name):
 
     # establish connection to the Postgresql database

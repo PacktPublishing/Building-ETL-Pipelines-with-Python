@@ -5,8 +5,8 @@ import pandas as pd
 def extract_data(filepath):
     """
        Simple Extract Function in Python with Error Handling
-       :param cfilepath: str, file path to CSV data
-       :output: dataframes, imported from CSV data
+       :param filepath: str, file path to CSV data
+       :output: pandas dataframe, extracted from CSV data
     """
     try:
         # Read the CSV file and store it in a dataframe
