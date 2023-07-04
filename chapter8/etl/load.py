@@ -1,25 +1,19 @@
 # import relevant modules
 import psycopg2
 
-def init_conn():
-    """
-    Initialize Postgre connection
-    :return: postgre cursor object
-    """
-    # establish connection to the Postgresql database
-    conn = psycopg2.connect(
-        database="your_database_name",
-        user="your_username",
-        password="your_password",
-        host="your_host",
-        port="your_port"
-    )
+# establish connection to the Postgresql database
+conn = psycopg2.connect(
+    database="your_database_name",
+    user="your_username",
+    password="your_password",
+    host="your_host",
+    port="your_port"
+)
 
-    # create a cursor object for running SQL queries
-    cur = conn.cursor()
-    print('successful creation of cursor object.')
+# create a cursor object for running SQL queries
+cur = conn.cursor()
+print('successful creation of cursor object.')
 
-    return conn, cur
 
 # suggested continued learning: this function can be modified to be fully dynamic
 def load_data(cur, df, postgre_table, postgre_schema):
@@ -70,10 +64,6 @@ def load_data(cur, df, postgre_table, postgre_schema):
     # Commit all changes to the database
     conn.commit()
 
-    # Close the cursor and database connection
-    cur.close()
-    conn.close()
-
 def close_conn(cur):
     """
     Closing Postgre connection
@@ -83,4 +73,5 @@ def close_conn(cur):
 
     # Close the cursor and database connection
     cur.close()
+    conn.close()
     print('successful closing of cursor object.')
