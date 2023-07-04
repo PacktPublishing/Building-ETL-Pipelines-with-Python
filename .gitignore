@@ -1,0 +1,6 @@
+# Jupyter Notebook files
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Jupyter Notebook checkpoints
+**/.ipynb_checkpoints/*
