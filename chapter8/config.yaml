@@ -15,3 +15,30 @@ postgresql:
 crash_filepath: data/traffic_crashes.csv
 vehicle_filepath: data/traffic_crash_vehicle.csv
 people_filepath: data/traffic_crash_people.csv
+
+# Chicago Data output schemas in PSQL
+crash_insert_PSQL: '''INSERT INTO chicago_dmv.Crash (CRASH_UNIT_ID,
+                      CRASH_ID,
+                      PERSON_ID,
+                      VEHICLE_ID,
+                      NUM_UNITS,
+                      TOTAL_INJURIES)
+                      VALUES (%s, %s, %s, %s, %s, %s);'''
+vehicle_insert_PSQL: '''INSERT INTO chicago_dmv.Vehicle
+                        (CRASH_UNIT_ID,
+                        CRASH_ID,
+                        CRASH_DATE,
+                        VEHICLE_ID,
+                        VEHICLE_MAKE,
+                        VEHICLE_MODEL,
+                        VEHICLE_YEAR,
+                        VEHICLE_TYPE)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
+person_insert_PSQL: '''INSERT INTO chicago_dmv.Person (PERSON_ID,
+                        CRASH_ID,
+                        CRASH_DATE,
+                        PERSON_TYPE,
+                        VEHICLE_ID,
+                        PERSON_SEX,
+                        PERSON_AGE)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s);'''
