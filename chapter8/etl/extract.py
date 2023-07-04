@@ -2,25 +2,15 @@
 import pandas as pd
 
 # extract data
-def extract_data(crash_filepath="data/traffic_crashes.csv",
-                 vehicle_filepath="data/traffic_crash_vehicle.csv",
-                 people_filepath="data/traffic_crash_people.csv"):
+def extract_data(filepath):
     """
        Simple Extract Function in Python with Error Handling
-       :param crash_filepath: str, file path to chicago crash data CSV
-       :param vehicle_filepath: str, file path to chicago vehicle data CSV
-       :param people_filepath: str, file path to chicago people data CSV
-       :output: list, list of dataframes imported in the following order: [crash, vehicle, people]
+       :param cfilepath: str, file path to CSV data
+       :output: dataframes, imported from CSV data
     """
     try:
-        # Read the traffic crashes CSV file and store it in a dataframe
-        crashes_df = pd.read_csv(crash_filepath)
-
-        # Read the traffic crash vehicle CSV file and store it in a dataframe
-        vehicles_df = pd.read_csv(vehicle_filepath)
-
-        # Read the traffic crash People CSV file and store it in a dataframe
-        people_df = pd.read_csv(people_filepath)
+        # Read the CSV file and store it in a dataframe
+        df = pd.read_csv(filepath)
 
     # Handle exception if any of the files are missing
     except FileNotFoundError as e:
@@ -30,4 +20,4 @@ def extract_data(crash_filepath="data/traffic_crashes.csv",
     except Exception as e:
         print(f"Error: {e}")
 
-    return [crashes_df, vehicles_df, people_df]
+    return df
