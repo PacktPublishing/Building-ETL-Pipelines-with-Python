@@ -192,6 +192,5 @@ class ChicagoDMV(luigi.Task):
     def requires(self):
         return [LoadCrashes(), LoadVehicles(), LoadPeople()]
 
-
 if __name__ == '__main__':
     luigi.run()
