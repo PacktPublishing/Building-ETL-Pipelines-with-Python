@@ -108,6 +108,5 @@ def load_data():
         })
     ])
 
-
 # Run the METL pipeline
 pipeline.run()
