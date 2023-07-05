@@ -1,5 +1,4 @@
 import psycopg2
-
 import configparser
 import bonobo
 from extract import extract_data
@@ -56,15 +55,7 @@ def load(data):
 # Define the Bonobo pipeline
 def get_graph(**options):
     graph = bonobo.Graph()
-
-    # Add the extract process to the graph
-    graph.add_chain(extract_data)
-
-    # Add the transform process to the graph
-    graph.add_chain(transform_data)
-
-    # Add the load process to the graph
-    graph.add_chain(load, _input=transform_data)
+    graph.add_chain(extract_data, transform_data, load)
     return graph
 
 
