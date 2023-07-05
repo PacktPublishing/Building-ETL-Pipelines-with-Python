@@ -1,7 +1,10 @@
+from datetime import datetime, timedelta
 import configparser
+import pandas as pd
+import psycopg2
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from datetime import datetime, timedelta
+
 
 # Define the ETL steps as Python functions:
 def extract_crashes():
@@ -13,84 +16,78 @@ def extract_vehicles():
 def extract_people():
     return pd.read_csv('data/traffic_crash_people.csv')
 
+
 def transform_crashes(df_crashes):
-    df_crashes = df_crashes[['CRASH_RECORD_ID', 'NUM_UNITS', 'TOTAL_INJURIES', 'CRASH_DATE']]
-    df_crashes = df_crashes.fillna(method='ffill')
-    df_crashes['CRASH_RECORD_ID'] = df_crashes['CRASH_RECORD_ID'].astype(str)
-    df_crashes['NUM_UNITS'] = df_crashes['NUM_UNITS'].astype(int)
-    df_crashes['TOTAL_INJURIES'] = df_crashes['TOTAL_INJURIES'].astype(int)
-    df_crashes = df_crashes.rename(columns={'CRASH_RECORD_ID': 'CRASH_ID'})
-    return df_crashes
+    # Transformation logic for crashes data
+    transformed_crashes = df_crashes[['CRASH_RECORD_ID', 'NUM_UNITS', 'TOTAL_INJURIES', 'CRASH_DATE']]
+    transformed_crashes = transformed_crashes.fillna(method='ffill')
+    transformed_crashes['CRASH_RECORD_ID'] = transformed_crashes['CRASH_RECORD_ID'].astype(str)
+    transformed_crashes['NUM_UNITS'] = transformed_crashes['NUM_UNITS'].astype(int)
+    transformed_crashes['TOTAL_INJURIES'] = transformed_crashes['TOTAL_INJURIES'].astype(int)
+    transformed_crashes = transformed_crashes.rename(columns={'CRASH_RECORD_ID': 'CRASH_ID'})
+    return transformed_crashes
+
 
 def transform_vehicles(df_vehicles, df_crashes):
-    df_vehicles = df_vehicles[['CRASH_RECORD_ID', 'MAKE', 'MODEL', 'VEHICLE_YEAR']]
-    df_vehicles = df_vehicles.fillna(method='ffill')
-    df_vehicles['CRASH_RECORD_ID'] = df_vehicles['CRASH_RECORD_ID'].astype(str)
-    df_vehicles['VEHICLE_YEAR'] = df_vehicles['VEHICLE_YEAR'].astype(int)
-    df_vehicles = df_vehicles.rename(
+    # Transformation logic for vehicles data
+    transformed_vehicles = df_vehicles[['CRASH_RECORD_ID', 'MAKE', 'MODEL', 'VEHICLE_YEAR']]
+    transformed_vehicles = transformed_vehicles.fillna(method='ffill')
+    transformed_vehicles['CRASH_RECORD_ID'] = transformed_vehicles['CRASH_RECORD_ID'].astype(str)
+    transformed_vehicles['VEHICLE_YEAR'] = transformed_vehicles['VEHICLE_YEAR'].astype(int)
+    transformed_vehicles = transformed_vehicles.rename(
         columns={'CRASH_RECORD_ID': 'CRASH_ID', 'MAKE': 'VEHICLE_MAKE', 'MODEL': 'VEHICLE_MODEL'})
-    df_vehicle = pd.merge(df_crashes, df_vehicles, on='CRASH_ID')
-    return df_vehicle
+    transformed_vehicle = pd.merge(df_crashes, transformed_vehicles, on='CRASH_ID')
+    return transformed_vehicle
+
 
 def transform_people(df_people, df_vehicle):
-    df_people = df_people[['CRASH_RECORD_ID', 'PERSON_ID', 'VEHICLE_ID', 'PERSON_AGE', 'PERSON_TYPE', 'PERSON_SEX']]
-    df_people = df_people.fillna(method='ffill')
-    df_people['CRASH_RECORD_ID'] = df_people['CRASH_RECORD_ID'].astype(str)
-    df_people['VEHICLE_ID'] = df_people['VEHICLE_ID'].astype(int)
-    df_people['PERSON_AGE'] = df_people['PERSON_AGE'].astype(int)
-    df_crash = pd.merge(df_vehicle, df_people, on=['CRASH_ID', 'VEHICLE_ID'])
-    return df_crash
+    # Transformation logic for people data
+    transformed_people = df_people[
+        ['CRASH_RECORD_ID', 'PERSON_ID', 'VEHICLE_ID', 'PERSON_AGE', 'PERSON_TYPE', 'PERSON_SEX']]
+    transformed_people = transformed_people.fillna(method='ffill')
+    transformed_people['CRASH_RECORD_ID'] = transformed_people['CRASH_RECORD_ID'].astype(str)
+    transformed_people['VEHICLE_ID'] = transformed_people['VEHICLE_ID'].astype(int)
+    transformed_people['PERSON_AGE'] = transformed_people['PERSON_AGE'].astype(int)
+    transformed_crash = pd.merge(df_vehicle, transformed_people, on=['CRASH_ID', 'VEHICLE_ID'])
+    return transformed_crash
+
 
 def load_vehicle(df_vehicle):
-    conn = psycopg2.connect(
-        host=config.get('postgresql', 'host'),
-        port=config.get('postgresql', 'port'),
-        database=config.get('postgresql', 'database'),
-        user=config.get('postgresql', 'user'),
-        password=config.get('postgresql', 'password')
-    )
+    # Load data into the vehicle table
+    conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute(""" 
-        CREATE TABLE IF NOT EXISTS chicago_dmv.Vehicle ( 
-             CRASH_UNIT_ID SERIAL PRIMARY KEY, 
-             CRASH_ID TEXT(128), 
-             CRASH_DATE    TIMESTAMP, 
-        VEHICLE_ID INTEGER, 
-        VEHICLE_MAKE TEXT(15), 
-        VEHICLE_MODEL TEXT(15), 
-        VEHICLE_YEAR INTEGER, 
-        VEHICLE_TYPE TEXT(20) 
-    ); 
-""")
-conn.commit()
-insert(conn, df_vehicle, 'chicago_dmv.Vehicle')
-
-def load_crash(df_crash):
-    conn = psycopg2.connect(
-        host=config.get('postgresql', 'host'),
-        port=config.get('postgresql', 'port'),
-        database=config.get('postgresql', 'database'),
-        user=config.get('postgresql', 'user'),
-        password=config.get('postgresql', 'password')
-    )
-    cur = conn.cursor()
-    cur.execute(""" 
-        CREATE TABLE IF NOT EXISTS chicago_dmv.CRASH ( 
-            CRASH_UNIT_ID SERIAL PRIMARY KEY, 
-            CRASH_ID TEXT, 
-            PERSON_ID TEXT, 
-            VEHICLE_ID INTEGER, 
-            NUM_UNITS NUMERIC, 
-            TOTAL_INJURIES NUMERIC 
-        ); 
+    cur.execute("""
+        -- SQL query to create or update the vehicle table
     """)
     conn.commit()
-    insert(conn, df_crash, 'chicago_dmv.CRASH')
+    # Insert data into the vehicle table using df_vehicle and psycopg2
 
-def load_data():
-    # Read the configuration file
+
+def load_crash(df_crash):
+    # Load data into the crash table
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        -- SQL query to create or update the crash table
+    """)
+    conn.commit()
+    # Insert data into the crash table using df_crash and psycopg2
+
+
+def get_db_connection():
+    # Get database connection based on the configuration
     config = configparser.ConfigParser()
     config.read('config.ini')
+
+    conn = psycopg2.connect(
+        host=config.get('postgresql', 'host'),
+        port=config.get('postgresql', 'port'),
+        database=config.get('postgresql', 'database'),
+        user=config.get('postgresql', 'user'),
+        password=config.get('postgresql', 'password')
+    )
+    return conn
+
 
 # Define the DAG
 default_args = {
@@ -161,5 +158,3 @@ task_extract_people >> task_transform_people
 task_transform_vehicles >> task_transform_people
 task_transform_people >> task_load_vehicle
 task_transform_people >> task_load_crash
-
-return dag
