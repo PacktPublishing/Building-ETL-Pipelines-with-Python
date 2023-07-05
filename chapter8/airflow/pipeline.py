@@ -5,11 +5,15 @@ import psycopg2
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
+import yaml
+
+# import pipeline configuration
+with open('../config.yaml', 'r') as file:
+    config_data = yaml.safe_load(file)
 
 # Define the ETL steps as Python functions:
 def extract_data(filepath):
     return pd.read_csv(filepath)
-
 
 def transform_crashes(crash_df):
     # Transformation logic for crashes data
@@ -20,7 +24,6 @@ def transform_crashes(crash_df):
     transformed_crashes['TOTAL_INJURIES'] = transformed_crashes['TOTAL_INJURIES'].astype(int)
     transformed_crashes = transformed_crashes.rename(columns={'CRASH_RECORD_ID': 'CRASH_ID'})
     return transformed_crashes
-
 
 def transform_vehicles(vehicle_df, crash_df):
     # Transformation logic for vehicles data
@@ -33,7 +36,6 @@ def transform_vehicles(vehicle_df, crash_df):
     transformed_vehicle = pd.merge(crash_df, transformed_vehicles, on='CRASH_ID')
     return transformed_vehicle
 
-
 def transform_people(people_df, vehicle_df):
     # Transformation logic for people data
     transformed_people = people_df[
@@ -44,7 +46,6 @@ def transform_people(people_df, vehicle_df):
     transformed_people['PERSON_AGE'] = transformed_people['PERSON_AGE'].astype(int)
     transformed_crash = pd.merge(vehicle_df, transformed_people, on=['CRASH_ID', 'VEHICLE_ID'])
     return transformed_crash
-
 
 def load_vehicle(vehicle_df):
     # Load data into the vehicle table
