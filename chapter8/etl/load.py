@@ -1,18 +1,21 @@
 # import relevant modules
+import configparser
 import psycopg2
 
-# establish connection to the Postgresql database
-conn = psycopg2.connect(
-    database="your_database_name",
-    user="your_username",
-    password="your_password",
-    host="your_host",
-    port="your_port"
-)
+def get_db_connection():
+    # Get database connection based on the configuration
+    config = configparser.ConfigParser()
+    config.read('config.ini')
 
-# create a cursor object for running SQL queries
-cur = conn.cursor()
-print('successful creation of cursor object.')
+    conn = psycopg2.connect(
+        host=config.get('postgresql', 'host'),
+        port=config.get('postgresql', 'port'),
+        database=config.get('postgresql', 'database'),
+        user=config.get('postgresql', 'user'),
+        password=config.get('postgresql', 'password')
+    )
+    print('successful creation of cursor object.')
+    return conn
 
 
 # suggested continued learning: this function can be modified to be fully dynamic
