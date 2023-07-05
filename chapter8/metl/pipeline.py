@@ -1,14 +1,13 @@
 import configparser
-
-import pandas as pd
-
 from metl import Pipeline
-
 from metl.loaders.postgresql_loader import PostgreSQLLoader
-
 from metl.extractors.dataframe_extractor import DataframeExtractor
-
 from metl.transformers.pandas_transformer import PandasTransformer
+import yaml
+
+# Import pipeline configuration
+with open('../config.yaml', 'r') as file:
+    config_data = yaml.safe_load(file)
 
 # Define the load_data() function as a pipeline using the METL framework:
 def load_data():
@@ -19,27 +18,24 @@ def load_data():
     # Create the METL pipeline
     pipeline = Pipeline([
         DataframeExtractor({
-            'df_crashes': {'path': 'data/traffic_crashes.csv'},
-            'df_vehicles':
-                {'path': 'data/traffic_crash_vehicle.csv'},
-            'df_people':
-                {'path': 'data/traffic_crash_people.csv'}
+            'crash_df': {'path': config_data['crash_filepath']},
+            'vehicle_df': {'path': config_data['vehicle_filepath'],
+            'people_df': {'path': config_data['people_filepath']}
         }),
         PandasTransformer({
-            'df_crashes': [
+            'crash_df': [
                 ('drop_duplicates', []),
                 ('fillna', {'value': {'NUM_UNITS': 0, 'TOTAL_INJURIES': 0}}),
                 ('to_datetime', {'column': 'CRASH_DATE'}),
                 ('rename_columns', {'columns': {'CRASH_RECORD_ID': 'CRASH_ID'}})
             ],
-            'df_vehicles': [
+            'vehicle_df': [
                 ('drop_duplicates', []),
                 ('fillna', {'value': ''}),
                 ('astype', {'column': 'VEHICLE_YEAR', 'dtype': 'Int64'}),
-                ('rename_columns',
-                 {'columns': {'CRASH_RECORD_ID': 'CRASH_ID', 'MAKE': 'VEHICLE_MAKE', 'MODEL': 'VEHICLE_MODEL'}})
+                ('rename_columns', {'columns': {'CRASH_RECORD_ID': 'CRASH_ID', 'MAKE': 'VEHICLE_MAKE', 'MODEL': 'VEHICLE_MODEL'}})
             ],
-            'df_people': [
+            'people_df': [
                 ('drop_duplicates', []),
                 ('fillna', {'value': ''}),
                 ('astype', {'column': 'PERSON_AGE', 'dtype': 'Int64'})
@@ -50,18 +46,18 @@ def load_data():
                 ('select_columns', {'columns': ['CRASH_UNIT_ID', 'CRASH_ID', 'CRASH_DATE', 'VEHICLE_ID', 'VEHICLE_MAKE',
                                                 'VEHICLE_MODEL', 'VEHICLE_YEAR', 'VEHICLE_TYPE']}),
                 ('merge_dataframes', {'dataframes': [
-                    {'dataframe': 'df_vehicles', 'on': 'CRASH_ID'},
-                    {'dataframe': 'df_crashes', 'on': 'CRASH_ID'}
+                    {'dataframe': 'vehicle_df', 'on': 'CRASH_ID'},
+                    {'dataframe': 'crash_df', 'on': 'CRASH_ID'}
                 ], 'how': 'left'}),
                 ('merge_dataframes', {'dataframes': [
-                    {'dataframe': 'df_people', 'on': ['CRASH_ID', 'VEHICLE_ID']}
+                    {'dataframe': 'people_df', 'on': ['CRASH_ID', 'VEHICLE_ID']}
                 ], 'how': 'left'})
             ],
             'df_crash': [
                 ('select_columns',
                  {'columns': ['CRASH_UNIT_ID', 'CRASH_ID', 'PERSON_ID', 'VEHICLE_ID', 'NUM_UNITS', 'TOTAL_INJURIES']}),
                 ('merge_dataframes', {'dataframes': [
-                    {'dataframe': 'df_people', 'on': ['CRASH_ID', 'VEHICLE_ID']}
+                    {'dataframe': 'people_df', 'on': ['CRASH_ID', 'VEHICLE_ID']}
                 ], 'how': 'left'}),
                 ('groupby', {'by': ['CRASH_UNIT_ID', 'CRASH_ID'], 'agg': {
                     'PERSON_ID': {'function': 'join', 'kwargs': {'sep': ','}},
@@ -108,5 +104,8 @@ def load_data():
         })
     ])
 
-# Run the METL pipeline
-pipeline.run()
+    # Run the METL pipeline
+    pipeline.run()
+
+# Call the load_data() function to execute the data pipeline
+load_data()

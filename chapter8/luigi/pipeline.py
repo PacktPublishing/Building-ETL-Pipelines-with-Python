@@ -3,11 +3,16 @@ import pandas as pd
 import psycopg2
 import configparser
 
+import yaml
+
+# import pipeline configuration
+with open('../config.yaml', 'r') as file:
+    config_data = yaml.safe_load(file)
 
 class ExtractCrashes(luigi.Task):
 
     def output(self):
-        return luigi.LocalTarget('data/traffic_crashes.csv')
+        return luigi.LocalTarget(config_data['crash_filepath'])
 
     def run(self):
         df_crashes = pd.read_csv(self.input().path)
@@ -24,7 +29,7 @@ class ExtractCrashes(luigi.Task):
 class ExtractVehicles(luigi.Task):
 
     def output(self):
-        return luigi.LocalTarget('data/traffic_crash_vehicle.csv')
+        return luigi.LocalTarget(config_data['vehicle_filepath'])
 
     def run(self):
         df_vehicles = pd.read_csv(self.input().path)
@@ -44,7 +49,7 @@ class ExtractVehicles(luigi.Task):
 class ExtractPeople(luigi.Task):
 
     def output(self):
-        return luigi.LocalTarget('data/traffic_crash_people.csv')
+        return luigi.LocalTarget(config_data['people_filepath'])
 
     def run(self):
         df_people = pd.read_csv(self.input().path)
