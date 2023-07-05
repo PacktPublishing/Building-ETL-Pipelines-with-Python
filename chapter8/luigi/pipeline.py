@@ -2,7 +2,7 @@ import luigi
 import pandas as pd
 import psycopg2
 import configparser
-from datetime import datetime, timedelta
+
 
 class ExtractCrashes(luigi.Task):
 
@@ -19,6 +19,7 @@ class ExtractCrashes(luigi.Task):
             'INJURIES_TOTAL': 'TOTAL_INJURIES'
         })
         df_crashes.to_csv(self.output().path, index=False)
+
 
 class ExtractVehicles(luigi.Task):
 
@@ -39,6 +40,7 @@ class ExtractVehicles(luigi.Task):
         })
         df_vehicles.to_csv(self.output().path, index=False)
 
+
 class ExtractPeople(luigi.Task):
 
     def output(self):
@@ -55,6 +57,7 @@ class ExtractPeople(luigi.Task):
         })
         df_people.to_csv(self.output().path, index=False)
 
+
 class TransformCrashes(luigi.Task):
 
     def requires(self):
@@ -68,9 +71,9 @@ class TransformCrashes(luigi.Task):
         df_crashes['CRASH_DATE'] = pd.to_datetime(df_crashes['CRASH_DATE'])
         df_crashes = df_crashes[df_crashes['CRASH_DATE_EST_I'] != 'Y']
         df_crashes = df_crashes[df_crashes['LATITUDE'].notnull() & df_crashes['LONGITUDE'].notnull()]
+        df_crashes = df_crashes.drop(columns=['CRASH_DATE_EST_I'])
+        df_crashes.to_csv(self.output().path, index=False)
 
-df_crashes = df_crashes.drop(columns=['CRASH_DATE_EST_I'])
-df_crashes.to_csv(self.output().path, index=False)
 
 class TransformVehicles(luigi.Task):
     def requires(self):
@@ -101,6 +104,7 @@ class TransformPeople(luigi.Task):
         df_people = df_people[df_people['PERSON_AGE'].notnull()]
         df_people.to_csv(self.output().path, index=False)
 
+
 class LoadCrashes(luigi.Task):
 
     def requires(self):
@@ -126,12 +130,6 @@ class LoadCrashes(luigi.Task):
         conn.commit()
         cursor.close()
         conn.close()
-
-
-import luigi
-import pandas as pd
-import psycopg2
-import configparser
 
 
 class LoadVehicles(luigi.Task):
@@ -188,9 +186,11 @@ class LoadPeople(luigi.Task):
         cursor.close()
         conn.close()
 
+
 class ChicagoDMV(luigi.Task):
     def requires(self):
         return [LoadCrashes(), LoadVehicles(), LoadPeople()]
+
 
 if __name__ == '__main__':
     luigi.run()
