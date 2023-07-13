@@ -64,7 +64,7 @@ The **_Building ETL Pipelines with Python_** consists of the following chapters:
 Each chapter directory contains code examples, exercises, and any additional resources required for that specific chapter.
 
 ## Contributing
-We encourage our readers to [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) this repository to use in tandem with each chapter. If you find any issues or have suggestions for enhancements, please feel free to submit a pull request or open an issue in the repository.
+We encourage our readers to [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) and [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) this repository to use in tandem with each chapter. If you find any issues or have suggestions for enhancements, please feel free to submit a pull request or open an issue in the repository.
 
 ## License
 The Python Coding Book is released under the Packt Publishing License. You are free to use, modify, and distribute the code and materials in this repository according to the terms of the license.
