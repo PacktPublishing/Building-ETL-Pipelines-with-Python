@@ -1,7 +1,7 @@
 # create a command-line runnable pipeline
 from extract import extract_data
 from transform import transform_data
-import load
+from chapter8.bonobo import load
 
 import yaml
 
