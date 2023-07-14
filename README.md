@@ -29,7 +29,17 @@ $ pipenv install --dev
 ```
 This will create a virtual environment and install all the required packages specified in the Pipfile.
 
-5. **Set Up PyCharm (_optional_)**: If you prefer to use PyCharm as your IDE, follow the PyCharm installation instructions on the official JetBrains website.
+5. **Jupyter Notebooks**: Install Jupyter Notebooks (https://jupyter.org/install) to open and interact with the code examples. Jupyter Notebooks provides an interactive and visual environment for running Python code. You can install it using the following command:
+
+```shell
+$ pip install notebook
+```
+To initiate and run a Jupyter Notebook instance, run the following command:
+```shell
+$ jupyter notebook
+```
+
+6. **Set Up PyCharm (_optional_)**: If you prefer to use PyCharm as your IDE, follow the PyCharm installation instructions on the official JetBrains website.
 
 ## Getting Started
 To start working with the Python Coding Book, follow the steps below:
