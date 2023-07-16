@@ -1,0 +1,16 @@
+# yaml file
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing dependencies...
+      - pip install -r requirements.txt
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Running ETL job...
+      - python etl.py
+  post_build:
+    commands:
+      - echo Build completed on `date`
