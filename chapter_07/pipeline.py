@@ -1,12 +1,12 @@
 # create a command-line runnable pipeline
-from extract import extract_data
-from transform import transform_data
-import load
+from etl.extract import extract_data
+from etl.transform import transform_data
+import etl.load as load
 
 import yaml
 
 # import pipeline configuration
-with open('../config.yaml', 'r') as file:
+with open('config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 

@@ -6,7 +6,7 @@ import configparser
 import yaml
 
 # import pipeline configuration
-with open('../config.yaml', 'r') as file:
+with open('../../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 class ExtractCrashes(luigi.Task):
