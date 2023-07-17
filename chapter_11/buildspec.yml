@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.6
+    commands:
+      - echo "Installing dependencies or setup steps before the build phase"
+      # < insert your code here >
+  pre_build:
+    commands:
+      - echo "Preparing for the build phase"
+  build:
+    commands:
+      - echo "Executing the ETL pipeline steps"
+      # we provided demo data, below -> for reuse, insert your etl code files here
+      - python etl/extract.py
+      - python etl/transform.py
+      - python etl/load.py
+  post_build:
+    commands:
+      - echo "Cleaning up or performing any additional tasks after the build phase"
+
+artifacts:
+  files:
+    - "**/*"  # By default, include all files generated during the build process
