@@ -1,8 +1,8 @@
 import psycopg2
 import configparser
 import bonobo
-from extract import extract_data
-from transform import transform_data
+from chapter_08.etl.extract import extract_data
+from chapter_08.etl.transform import transform_data
 
 import yaml
 
