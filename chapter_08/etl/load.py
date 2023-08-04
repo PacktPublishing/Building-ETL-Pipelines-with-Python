@@ -19,7 +19,7 @@ def get_db_connection():
 
 
 # suggested continued learning: this function can be modified to be fully dynamic
-def load_data(df: object, postgre_table: object, postgre_schema: object) -> object:
+def load_data(df: object, conn: object, postgre_table: object, postgre_schema: object) -> object:
     """
     Load transformed data into respective PostgreSQL Table
     :param cur: posgre cursor object

@@ -8,7 +8,7 @@ from airflow.operators.python_operator import PythonOperator
 import yaml
 
 # import pipeline configuration
-with open('../config.yaml', 'r') as file:
+with open('../../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 # Define the ETL steps as Python functions:
