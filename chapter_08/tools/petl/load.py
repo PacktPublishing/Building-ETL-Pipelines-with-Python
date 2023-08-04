@@ -1,12 +1,6 @@
 import configparser
-
 import petl as etl
-
 from petl.io.sources import DictSource
-
-from petl.transform import addfield, convert, filldown, rename, select
-
-from petl.util.postgresql import insert
 
 def load_data():
     # Read the configuration file

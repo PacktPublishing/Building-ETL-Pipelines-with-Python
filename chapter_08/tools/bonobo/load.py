@@ -1,15 +1,11 @@
+# Import modules
 import psycopg2
 import configparser
-import bonobo
-from chapter_08.etl.extract import extract_data
-from chapter_08.etl.transform import transform_data
-
 import yaml
 
-# import pipeline configuration
+# Import database configuration
 with open('../../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
-
 
 # Define the load process as a Bonobo graph
 def load(data):
@@ -57,28 +53,3 @@ def load(data):
 
     # Close the database connection
     conn.close()
-
-
-# Define the Bonobo pipeline
-def get_graph(**options):
-    graph = bonobo.Graph()
-    graph.add_chain(extract_data, transform_data, load)
-    return graph
-
-
-# Define the main function to run the Bonobo pipeline
-def main():
-    # Set the options for the Bonobo pipeline
-    options = {
-        'services': [],
-        'plugins': [],
-        'log_level': 'INFO',
-        'log_handlers': [bonobo.logging.StreamHandler()],
-        'use_colors': True,
-        'graph': get_graph()
-    }
-    # Run the Bonobo pipeline
-    bonobo.run(**options)
-
-if __name__ == '__main__':
-    main()
