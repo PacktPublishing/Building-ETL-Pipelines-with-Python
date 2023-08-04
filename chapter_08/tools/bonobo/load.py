@@ -8,7 +8,7 @@ with open('../../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 # Define the load process as a Bonobo graph
-def load(data):
+def load_data(data):
     # Extract and transform the data
     data = transform_data(extract_data())
     df_vehicle = data['df_vehicle']
