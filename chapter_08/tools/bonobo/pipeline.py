@@ -4,6 +4,13 @@ from chapter_08.etl.extract import extract_data
 from chapter_08.etl.transform import transform_data
 from chapter_08.tools.bonobo.load import load_data
 
+# Step 1: Extract data
+    crashes_df = extract_data(config_data['crash_filepath'])
+    vehicle_df = extract_data(config_data['vehicle_filepath'])
+    people_df = extract_data(config_data['people_filepath'])
+
+
+
 # Define the Bonobo pipeline
 def get_graph(**options):
     graph = bonobo.Graph()

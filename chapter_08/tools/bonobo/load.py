@@ -9,8 +9,13 @@ with open('../../config.yaml', 'r') as file:
 
 # Define the load process as a Bonobo graph
 def load_data(data):
+
     # Extract and transform the data
     data = transform_data(extract_data())
+    # Step 1: Extract data
+    crashes_df = extract_data(config_data['crash_filepath'])
+    vehicle_df = extract_data(config_data['vehicle_filepath'])
+    people_df = extract_data(config_data['people_filepath'])
     df_vehicle = data['df_vehicle']
     df_crash = data['df_crash']
 

@@ -1,7 +1,12 @@
+# Import modules
+import psycopg2
+import configparser
 from odo import odo
-from chapter_08.etl.extract import extract_data
-from chapter_08.etl.transform import transform_data
-from chapter_08.tools.bonobo.load import load_data
+import yaml
+
+# Import database configuration
+with open('../../config.yaml', 'r') as file:
+    config_data = yaml.safe_load(file)
 
 # Define the load_data() function as a pipeline using Odo:
 def load_data():
