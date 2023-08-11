@@ -1,0 +1,20 @@
+# Configuration for a Basic Data Pipeline
+pipeline:
+  name: E-Commerce ETL Pipeline
+  version: 1.0
+
+# DISCLAIMER: modify the following code to match your local Postgre instance
+postgresql:
+  host: localhost
+  port: 5432
+  username: postgres
+  password: mypassword
+  database_name: sales
+
+# E-Commerce Data file paths
+orders_filepath: data/orders.csv
+products_filepath: data/products.csv
+customers_filepath: data/customers.csv
+
+# E-Commerce Data output tables in PSQL
+ecommerce_table_PSQL: sales.EcommerceData
