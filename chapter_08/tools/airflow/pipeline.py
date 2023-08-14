@@ -86,10 +86,11 @@ def get_db_connection():
 
 # Define the DAG
 default_args = {
-    'owner': 'airflow',
+    'owner': 'first_airflow_pipeline',
     'depends_on_past': False,
-    'start_date': datetime(2022, 1, 1),
-    'retries': 0
+    'start_date': datetime(2023, 8, 13),
+    'retry_delay': timedelta(minutes=5),
+    'catchup': False,
 }
 dag = DAG('chicago_dmv', default_args=default_args, schedule_interval=timedelta(days=1))
 
