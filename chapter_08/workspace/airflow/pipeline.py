@@ -1,7 +1,5 @@
 # Import Modules
 import yaml
-import psycopg2
-import configparser
 from datetime import (
     datetime,
     timedelta
