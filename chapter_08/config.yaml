@@ -32,7 +32,6 @@ people_columns_rename_dict: {'CRASH_RECORD_ID': 'CRASH_ID', 'PERSON_TYPE': 'PERS
 # Chicago Data output tables in PSQL
 crash_table_PSQL: chicago_dmv.Crash
 vehicle_table_PSQL: chicago_dmv.Vehicle
-person_table_PSQL:  chicago_dmv.Person
 
 # Chicago Data output schemas in PSQL
 crash_insert_PSQL: '''(CRASH_UNIT_ID,
