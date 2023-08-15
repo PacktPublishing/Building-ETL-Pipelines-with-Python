@@ -8,6 +8,7 @@ from chapter_08.etl.transform import (
     transform_vehicle_data,
     transform_people_data
 )
+from chapter_08.etl.load import load_data
 
 import yaml
 
@@ -99,25 +100,10 @@ class LoadCrashes(luigi.Task):
         return TransformCrashes()
 
     def run(self):
-        config = configparser.ConfigParser()
-        config.read('config.ini')
-        conn = psycopg2.connect(
-            host=config['POSTGRESQL']['host'],
-            port=config['POSTGRESQL']['port'],
-            dbname=config['POSTGRESQL']['database'],
-            user=config['POSTGRESQL']['user'],
-            password=config['POSTGRESQL']['password']
-        )
-        cursor = conn.cursor()
-        cursor.execute(
-            'CREATE TABLE IF NOT EXISTS chicago_dmv.CRASH (CRASH_ID TEXT, CRASH_DATE TIMESTAMP, CRASH_HOUR INTEGER, CRASH_DAY_OF_WEEK INTEGER, CRASH_MONTH INTEGER, LATITUDE NUMERIC, LONGITUDE NUMERIC, NUM_UNITS INTEGER, TOTAL_INJURIES INTEGER)')
-        conn.commit()
-        df_crashes = pd.read_csv(self.input().path)
-        for row in df_crashes.itertuples(index=False):
-            cursor.execute('INSERT INTO chicago_dmv.CRASH VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)', row)
-        conn.commit()
-        cursor.close()
-        conn.close()
+        crash_df = pd.read_csv(self.input().path)
+        load_data(df=crash_df,
+                  create_PSQL=config_data['crash_create_PSQL'],
+                  insert_PSQL=config_data['crash_insert_PSQL'])
 
 
 class LoadVehicles(luigi.Task):
@@ -126,25 +112,10 @@ class LoadVehicles(luigi.Task):
         return TransformVehicles()
 
     def run(self):
-        config = configparser.ConfigParser()
-        config.read('config.ini')
-        conn = psycopg2.connect(
-            host=config['POSTGRESQL']['host'],
-            port=config['POSTGRESQL']['port'],
-            dbname=config['POSTGRESQL']['database'],
-            user=config['POSTGRESQL']['user'],
-            password=config['POSTGRESQL']['password']
-        )
-        cursor = conn.cursor()
-        cursor.execute(
-            'CREATE TABLE IF NOT EXISTS chicago_dmv.VEHICLE (CRASH_UNIT_ID INTEGER, CRASH_ID TEXT, CRASH_DATE TIMESTAMP, VEHICLE_ID INTEGER, VEHICLE_MAKE TEXT, VEHICLE_MODEL TEXT, VEHICLE_YEAR INTEGER, VEHICLE_TYPE TEXT)')
-        conn.commit()
-        df_vehicles = pd.read_csv(self.input().path)
-        for row in df_vehicles.itertuples(index=False):
-            cursor.execute('INSERT INTO chicago_dmv.VEHICLE VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', row)
-        conn.commit()
-        cursor.close()
-        conn.close()
+        people_df = pd.read_csv(self.input().path)
+        load_data(df=people_df,
+                  create_PSQL=config_data['people_create_PSQL'],
+                  insert_PSQL=config_data['people_insert_PSQL'])
 
 
 class LoadPeople(luigi.Task):
@@ -153,26 +124,10 @@ class LoadPeople(luigi.Task):
         return TransformPeople()
 
     def run(self):
-        config = configparser.ConfigParser()
-        config.read('config.ini')
-        conn = psycopg2.connect(
-            host=config['POSTGRESQL']['host'],
-            port=config['POSTGRESQL']['port'],
-            dbname=config['POSTGRESQL']['database'],
-            user=config['POSTGRESQL']['user'],
-            password=config['POSTGRESQL']['password']
-        )
-        cursor = conn.cursor()
-        cursor.execute(
-            'CREATE TABLE IF NOT EXISTS chicago_dmv.PERSON (PERSON_ID TEXT, CRASH_ID TEXT, CRASH_DATE TIMESTAMP, PERSON_TYPE TEXT, VEHICLE_ID INTEGER, PERSON_SEX TEXT, PERSON_AGE INTEGER)')
-        conn.commit()
-        df_people = pd.read_csv(self.input().path)
-        for row in df_people.itertuples(index=False):
-            cursor.execute('INSERT INTO chicago_dmv.PERSON VALUES (%s, %s, %s, %s, %s, %s, %s)', row)
-
-        conn.commit()
-        cursor.close()
-        conn.close()
+        vehicle_df = pd.read_csv(self.input().path)
+        load_data(df=vehicle_df,
+                  create_PSQL=config_data['vehicle_create_PSQL'],
+                  insert_PSQL=config_data['vehicle_insert_PSQL'])
 
 
 class ChicagoDMV(luigi.Task):

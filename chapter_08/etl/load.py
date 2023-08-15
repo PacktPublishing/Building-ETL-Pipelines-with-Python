@@ -1,12 +1,24 @@
-# import relevant modules
-import configparser
+# Import modules
 import psycopg2
+import configparser
+import yaml
 
-def get_db_connection():
-    # Get database connection based on the configuration
+# Import database configuration
+with open('../../config.yaml', 'r') as file:
+    config_data = yaml.safe_load(file)
+
+# Define the load process as a Bonobo graph
+def load_data(data: list) -> object:
+
+    # Import data
+    crash_df = data[0]
+    vehicle_df = data[1]
+
+    # Read the configuration file
     config = configparser.ConfigParser()
     config.read('config.ini')
 
+    # Connect to the database
     conn = psycopg2.connect(
         host=config.get('postgresql', 'host'),
         port=config.get('postgresql', 'port'),
@@ -14,67 +26,30 @@ def get_db_connection():
         user=config.get('postgresql', 'user'),
         password=config.get('postgresql', 'password')
     )
-    print('successful creation of cursor object.')
-    return conn
 
+    # Define the Postgresql query to insert data into the vehicle table
+    insert_vehicle_query = '''INSERT INTO chicago_dmv.Vehicle (CRASH_UNIT_ID, CRASH_ID, CRASH_DATE, VEHICLE_ID, VEHICLE_MAKE, VEHICLE_MODEL, VEHICLE_YEAR, VEHICLE_TYPE) 
+                              VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
 
-# suggested continued learning: this function can be modified to be fully dynamic
-def load_data(df: object, conn: object, postgre_table: object, postgre_schema: object) -> object:
-    """
-    Load transformed data into respective PostgreSQL Table
-    :param cur: posgre cursor object
-    :return: cursor object
-    """
-    insert_query = f"INSERT INTO {postgre_table} {postgre_schema};"
+    # Convert the dataframe to a list of tuples
+    data_vehicle = [tuple(x) for x in vehicle_df.values]
 
-    # insert transformed data into PostgreSQL table
-    # TODO: REFACTOR TO MAKE SENSE - VERY SLOW / POOR USE OF CPUs
-    for index, row in df.iterrows():
+    # Execute the Postgresql query to insert data into the vehicle table
+    with conn.cursor() as cur:
+        cur.executemany(insert_vehicle_query, data_vehicle)
+        conn.commit()
 
-        if postgre_table == 'chicago_dmv.Crash':
-            insert_values = (row['CRASH_UNIT_ID'],
-                              row['CRASH_ID'],
-                              row['PERSON_ID'],
-                              row['VEHICLE_ID'],
-                              row['NUM_UNITS'],
-                              row['TOTAL_INJURIES'])
+    # Define the Postgresql query to insert data into the crash table
+    insert_crash_query = '''INSERT INTO chicago_dmv.CRASH (CRASH_UNIT_ID, CRASH_ID, PERSON_ID, VEHICLE_ID, NUM_UNITS, TOTAL_INJURIES) 
+                            VALUES (%s, %s, %s, %s, %s, %s);'''
 
-        elif postgre_table == 'chicago_dmv.Vehicle':
-            insert_values = (row['CRASH_UNIT_ID'],
-                              row['CRASH_ID'],
-                              row['CRASH_DATE'],
-                              row['VEHICLE_ID'],
-                              row['VEHICLE_MAKE'],
-                              row['VEHICLE_MODEL'],
-                              row['VEHICLE_YEAR'],
-                              row['VEHICLE_TYPE'])
+    # Convert the dataframe to a list of tuples
+    data_crash = [tuple(x) for x in crash_df.values]
 
-        elif postgre_table == 'chicago_dmv.Person':
-            insert_values = (row['PERSON_ID'],
-                              row['CRASH_ID'],
-                              row['CRASH_DATE'],
-                              row['PERSON_TYPE'],
-                              row['VEHICLE_ID'],
-                              row['PERSON_SEX'],
-                              row['PERSON_AGE'])
+    # Execute the Postgresql query to insert data into the crash table
+    with conn.cursor() as cur:
+        cur.executemany(insert_crash_query, data_crash)
+        conn.commit()
 
-        else:
-            raise ValueError(f'Postgre Data Table {postgre_table} does not exist in this pipeline.')
-
-        # Insert data int
-        cur.execute(insert_query, insert_values)
-
-    # Commit all changes to the database
-    conn.commit()
-
-def close_conn(cur):
-    """
-    Closing Postgre connection
-    :param cur: posgre cursor object
-    :return: none
-    """
-
-    # Close the cursor and database connection
-    cur.close()
+    # Close the database connection
     conn.close()
-    print('successful closing of cursor object.')
