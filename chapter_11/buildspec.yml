@@ -16,7 +16,7 @@ phases:
       # we provided demo data, below -> for reuse, insert your etl code files here
       - python etl/extract.py
       - python etl/transform.py
-      - python etl/load.py
+      - python etl/pipeline.py
   post_build:
     commands:
       - echo "Cleaning up or performing any additional tasks after the build phase"

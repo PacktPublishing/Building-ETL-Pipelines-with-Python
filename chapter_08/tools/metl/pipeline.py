@@ -17,48 +17,51 @@ def load_data():
 
     # Create the METL pipeline
     pipeline = Pipeline([
+
+        # Extract Data with METL
         DataframeExtractor({
             'crash_df': {'path': config_data['crash_filepath']},
-            'vehicle_df': {'path': config_data['vehicle_filepath'],
+            'vehicle_df': {'path': config_data['vehicle_filepath']},
             'people_df': {'path': config_data['people_filepath']}
         }),
+
+        # Transform Data with METL
         PandasTransformer({
             'crash_df': [
                 ('drop_duplicates', []),
                 ('fillna', {'value': {'NUM_UNITS': 0, 'TOTAL_INJURIES': 0}}),
                 ('to_datetime', {'column': 'CRASH_DATE'}),
-                ('rename_columns', {'columns': {'CRASH_RECORD_ID': 'CRASH_ID'}})
+                ('rename_columns', {'columns': config_data['crash_columns_rename_dict']})
             ],
             'vehicle_df': [
                 ('drop_duplicates', []),
                 ('fillna', {'value': ''}),
                 ('astype', {'column': 'VEHICLE_YEAR', 'dtype': 'Int64'}),
-                ('rename_columns', {'columns': {'CRASH_RECORD_ID': 'CRASH_ID', 'MAKE': 'VEHICLE_MAKE', 'MODEL': 'VEHICLE_MODEL'}})
+                ('rename_columns', {'columns': config_data['vehicle_columns_rename_dict']})
             ],
             'people_df': [
                 ('drop_duplicates', []),
                 ('fillna', {'value': ''}),
-                ('astype', {'column': 'PERSON_AGE', 'dtype': 'Int64'})
+                ('astype', {'column': 'PERSON_AGE', 'dtype': 'Int64'}),
+                ('rename_columns', {'columns': config_data['people_columns_rename_dict']})
             ]
         }),
+
+        # Merge Transform Data with METL
         PandasTransformer({
-            'df_vehicle': [
-                ('select_columns', {'columns': ['CRASH_UNIT_ID', 'CRASH_ID', 'CRASH_DATE', 'VEHICLE_ID', 'VEHICLE_MAKE',
-                                                'VEHICLE_MODEL', 'VEHICLE_YEAR', 'VEHICLE_TYPE']}),
+            'vehicle_crash_df': [
+                ('select_columns', {'columns': config_data['crash_columns_list']}),
                 ('merge_dataframes', {'dataframes': [
                     {'dataframe': 'vehicle_df', 'on': 'CRASH_ID'},
                     {'dataframe': 'crash_df', 'on': 'CRASH_ID'}
                 ], 'how': 'left'}),
                 ('merge_dataframes', {'dataframes': [
-                    {'dataframe': 'people_df', 'on': ['CRASH_ID', 'VEHICLE_ID']}
-                ], 'how': 'left'})
+                    {'dataframe': 'people_df', 'on': ['CRASH_ID', 'VEHICLE_ID']} ], 'how': 'left'})
             ],
-            'df_crash': [
-                ('select_columns',
-                 {'columns': ['CRASH_UNIT_ID', 'CRASH_ID', 'PERSON_ID', 'VEHICLE_ID', 'NUM_UNITS', 'TOTAL_INJURIES']}),
+            'person_crash_df': [
+                ('select_columns', {'columns': config_data['vehicle_columns_list']}),
                 ('merge_dataframes', {'dataframes': [
-                    {'dataframe': 'people_df', 'on': ['CRASH_ID', 'VEHICLE_ID']}
-                ], 'how': 'left'}),
+                    {'dataframe': 'people_df', 'on': ['CRASH_ID', 'VEHICLE_ID']}], 'how': 'left'}),
                 ('groupby', {'by': ['CRASH_UNIT_ID', 'CRASH_ID'], 'agg': {
                     'PERSON_ID': {'function': 'join', 'kwargs': {'sep': ','}},
                     'VEHICLE_ID': {'function': 'first'},
@@ -67,6 +70,8 @@ def load_data():
                 }})
             ]
         }),
+
+        # Load Data to PSQL with METL
         PostgreSQLLoader({
             'dsn': 'postgresql://{user}:{password}@{host}:{port}/{database}'.format(
                 host=config.get('postgresql', 'host'),
@@ -76,7 +81,7 @@ def load_data():
                 password=config.get('postgresql', 'password')
             ),
             'tables': {
-                'chicago_dmv.Vehicle': {
+                config_data['vehicle_table_PSQL'] : {
                     'primary_key': ['CRASH_UNIT_ID'],
                     'columns': {
                         'CRASH_UNIT_ID': {'type': 'int'},
@@ -89,7 +94,7 @@ def load_data():
                         'VEHICLE_TYPE': {'type': 'string'}
                     }
                 },
-                'chicago_dmv.CRASH': {
+                config_data['crash_table_PSQL']: {
                     'primary_key': ['CRASH_UNIT_ID', 'CRASH_ID'],
                     'columns': {
                         'CRASH_UNIT_ID': {'type': 'int'},

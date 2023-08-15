@@ -1,40 +1,23 @@
-# import modules
+# Import modules
 import pandas as pd
 
-# transform data
-def transform_data(df: object) -> object:
-    """
-       Simple Transformation Function in Python with Error Handling
-       :param df: pandas dataframe, extracted data
-       :output: pandas dataframe, transformed data
-    """
+# Transform Crash Data
+def transform_crash_data(crashes_df):
+    crashes_df['CRASH_DATE'] = pd.to_datetime(crashes_df['CRASH_DATE'])
+    crashes_df = crashes_df[crashes_df['CRASH_DATE_EST_I'] != 'Y']
+    crashes_df = crashes_df[crashes_df['LATITUDE'].notnull() & crashes_df['LONGITUDE'].notnull()]
+    crashes_df = crashes_df.drop(columns=['CRASH_DATE_EST_I'])
+    return crashes_df
 
-    # drop duplicate rows
-    df = df.drop_duplicates()
+# Transform Vehicle Data
+def transform_vehicle_data(vehicles_df):
+    vehicles_df['VEHICLE_MAKE'] = vehicles_df['VEHICLE_MAKE'].str.upper()
+    vehicles_df['VEHICLE_MODEL'] = vehicles_df['VEHICLE_MODEL'].str.upper()
+    vehicles_df = vehicles_df[vehicles_df['VEHICLE_YEAR'].notnull()]
+    return vehicles_df
 
-    # replace missing values in numeric columns with the mean
-    df.fillna(df.mean(), inplace=True)
-
-    # replace missing values in categorical columns with the mode
-    df.fillna(df.mode().iloc[0], inplace=True)
-
-    # convert columns to appropriate data types
-    try:
-        df['CRASH_DATE'] = pd.to_datetime(df['CRASH_DATE'], format='%m/%d/%Y')
-    except:
-        pass
-
-    try:
-        df['POSTED_SPEED_LIMIT'] = df ['POSTED_SPEED_LIMIT'].astype('int32')
-    except:
-        pass
-
-    # # merge the three dataframes into a single dataframe
-    # merge_01_df = pd.merge(df, df2, on='CRASH_RECORD_ID')
-    # all_data_df = pd.merge(merge_01_df, df3, on='CRASH_RECORD_ID')
-    #
-    # # drop unnecessary columns
-    # df = df[['CRASH_UNIT_ID', 'CRASH_ID', 'CRASH_DATE', 'VEHICLE_ID', 'VEHICLE_MAKE', 'VEHICLE_MODEL',
-    #          'VEHICLE_YEAR', 'VEHICLE_TYPE', 'PERSON_ID', 'PERSON_TYPE', 'PERSON_SEX', 'PERSON_AGE',
-    #          'CRASH_HOUR', 'CRASH_DAY_OF_WEEK', 'CRASH_MONTH', 'DATE_POLICE_NOTIFIED']]
-    return df
+# Transform People Data
+def transform_people_data(people_df):
+    people_df = people_df[people_df['PERSON_TYPE'].isin(['DRIVER', 'PASSENGER', 'PEDESTRIAN', 'BICYCLE', 'OTHER'])]
+    people_df = people_df[people_df['PERSON_AGE'].notnull()]
+    return people_df
