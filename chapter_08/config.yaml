@@ -34,27 +34,19 @@ crash_table_PSQL: chicago_dmv.Crash
 vehicle_table_PSQL: chicago_dmv.Vehicle
 
 # Chicago Data output schemas in PSQL
-crash_insert_PSQL: '''(CRASH_UNIT_ID,
-                      CRASH_ID,
-                      PERSON_ID,
-                      VEHICLE_ID,
-                      NUM_UNITS,
-                      TOTAL_INJURIES)
-                      VALUES (%s, %s, %s, %s, %s, %s)'''
-vehicle_insert_PSQL: '''(CRASH_UNIT_ID,
-                        CRASH_ID,
-                        CRASH_DATE,
-                        VEHICLE_ID,
-                        VEHICLE_MAKE,
-                        VEHICLE_MODEL,
-                        VEHICLE_YEAR,
-                        VEHICLE_TYPE)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
-person_insert_PSQL: '''(PERSON_ID,
-                        CRASH_ID,
-                        CRASH_DATE,
-                        PERSON_TYPE,
-                        VEHICLE_ID,
-                        PERSON_SEX,
-                        PERSON_AGE)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s)'''
+crash_create_PSQL: '''CREATE TABLE IF NOT EXISTS chicago_dmv.CRASH
+                      (CRASH_ID TEXT, CRASH_DATE TIMESTAMP, CRASH_HOUR INTEGER,
+                      CRASH_DAY_OF_WEEK INTEGER, CRASH_MONTH INTEGER, LATITUDE NUMERIC,
+                      LONGITUDE NUMERIC, NUM_UNITS INTEGER, TOTAL_INJURIES INTEGER)'''
+crash_insert_PSQL: 'INSERT INTO chicago_dmv.CRASH VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)'
+
+vehicle_create_PSQL: '''CREATE TABLE IF NOT EXISTS chicago_dmv.VEHICLE
+                        (CRASH_UNIT_ID INTEGER, CRASH_ID TEXT, CRASH_DATE TIMESTAMP,
+                        VEHICLE_ID INTEGER, VEHICLE_MAKE TEXT, VEHICLE_MODEL TEXT,
+                        VEHICLE_YEAR INTEGER, VEHICLE_TYPE TEXT)'''
+vehicle_insert_PSQL: 'INSERT INTO chicago_dmv.VEHICLE VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'
+
+people_create_PSQL: '''CREATE TABLE IF NOT EXISTS chicago_dmv.PERSON
+                      (PERSON_ID TEXT, CRASH_ID TEXT, CRASH_DATE TIMESTAMP, PERSON_TYPE TEXT,
+                      VEHICLE_ID INTEGER, PERSON_SEX TEXT, PERSON_AGE INTEGER)'''
+people_insert_PSQL: 'INSERT INTO chicago_dmv.PERSON VALUES (%s, %s, %s, %s, %s, %s, %s)'

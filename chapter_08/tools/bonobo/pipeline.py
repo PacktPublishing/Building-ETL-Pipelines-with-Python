@@ -7,7 +7,7 @@ from chapter_08.etl.transform import (
     transform_vehicle_data,
     transform_people_data
 )
-from chapter_08.tools.bonobo.load import load_data
+from chapter_08.etl.load import load_data
 
 # Import file configuration
 with open('../../config.yaml', 'r') as file:
@@ -34,12 +34,21 @@ def transform_all_data(data: list) -> list:
     return [transformed_crashes_df, transformed_vehicle_df, transformed_people_df]
 
 # Step 3: Load Data
-# - import new bonobo load_data() in bonobo directory
+def load_all_data(transformed_data: list) -> list:
+    load_data(df=transformed_data[0],
+              create_PSQL=config_data['crash_create_PSQL'],
+              insert_PSQL=config_data['crash_insert_PSQL'])
+    load_data(df=transformed_data[1],
+              create_PSQL=config_data['vehicle_create_PSQL'],
+              insert_PSQL=config_data['vehicle_insert_PSQL'])
+    load_data(df=transformed_data[2],
+              create_PSQL=config_data['people_create_PSQL'],
+              insert_PSQL=config_data['people_insert_PSQL'])
 
 # Define the Bonobo pipeline
 def get_graph(**options):
     graph = bonobo.Graph()
-    graph.add_chain(extract_all_data, transform_all_data, load_data)
+    graph.add_chain(extract_all_data, transform_all_data, load_all_data)
     return graph
 
 # Define the main function to run the Bonobo pipeline
