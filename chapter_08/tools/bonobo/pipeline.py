@@ -22,8 +22,8 @@ def extract_all_data() -> list:
                               select_cols=config_data['vehicle_columns_list'],
                               rename_cols=config_data['vehicle_columns_rename_dict'])
     people_df = extract_data(filepath=config_data['people_filepath'],
-                              select_cols=config_data['crash_columns_list'],
-                              rename_cols=config_data['crash_columns_rename_dict'])
+                              select_cols=config_data['people_columns_list'],
+                              rename_cols=config_data['people_columns_rename_dict'])
     return [crashes_df, vehicle_df, people_df]
 
 # Step 2: Transform Data
