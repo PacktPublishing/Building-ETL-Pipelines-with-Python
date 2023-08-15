@@ -69,7 +69,7 @@ task_transform_vehicles = PythonOperator(
 )
 task_transform_people = PythonOperator(
     task_id='transform_people',
-    python_callable=transform_vehicle_data,
+    python_callable=transform_people_data,
     op_kwargs={'people_df': "{{ task_instance.xcom_pull(task_ids='extract_people') }}"},
     dag=dag
 )
