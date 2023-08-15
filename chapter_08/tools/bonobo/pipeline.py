@@ -2,7 +2,7 @@
 import yaml
 import bonobo
 from chapter_08.etl.extract import extract_data
-from chapter_08.tools.bonobo.transform import (
+from chapter_08.etl.transform import (
     transform_crash_data,
     transform_vehicle_data,
     transform_people_data
