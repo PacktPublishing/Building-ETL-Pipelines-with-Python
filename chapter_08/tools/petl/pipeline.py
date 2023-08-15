@@ -40,15 +40,16 @@ def load_data():
                                                     ('rename', config_data['vehicle_columns_rename_dict'])])
 
     # Extract People Data with pETL
-    people_df = etl.select(people_path, tuple(config_data['crash_columns_list']))
+    people_df = etl.select(people_path, tuple(config_data['people_columns_list']))
 
     # Transform People Data with pETL
     transform_people_df = etl.transform(people_df, [('filldown', 'CRASH_RECORD_ID'),
-                                        ('filldown', 'PERSON_ID'),
-                                        ('convert', 'VEHICLE_ID', int),
-                                        ('convert', 'PERSON_AGE', int),
-                                        ('filldown', 'PERSON_TYPE'),
-                                        ('filldown', 'PERSON_SEX')])
+                                                    ('filldown', 'PERSON_ID'),
+                                                    ('convert', 'VEHICLE_ID', int),
+                                                    ('convert', 'PERSON_AGE', int),
+                                                    ('filldown', 'PERSON_TYPE'),
+                                                    ('filldown', 'PERSON_SEX'),
+                                                    ('rename', config_data['people_columns_rename_dict'])])
 
     # Prepare Data for Output
     vehicle_crash_df = etl.join(transform_vehicle_df, transform_crash_df, key='CRASH_ID')
