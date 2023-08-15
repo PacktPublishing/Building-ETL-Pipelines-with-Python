@@ -1,7 +1,13 @@
 import luigi
-import pandas as pd
 import psycopg2
 import configparser
+import pandas as pd
+from chapter_08.etl.extract import extract_data
+from chapter_08.etl.transform import (
+    transform_crash_data,
+    transform_vehicle_data,
+    transform_people_data
+)
 
 import yaml
 
@@ -9,21 +15,17 @@ import yaml
 with open('../../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
+
 class ExtractCrashes(luigi.Task):
 
     def output(self):
         return luigi.LocalTarget(config_data['crash_filepath'])
 
     def run(self):
-        df_crashes = pd.read_csv(self.input().path)
-        df_crashes = df_crashes[
-            ['CRASH_RECORD_ID', 'CRASH_DATE_EST_I', 'CRASH_DATE', 'CRASH_HOUR', 'CRASH_DAY_OF_WEEK', 'CRASH_MONTH',
-             'LATITUDE', 'LONGITUDE', 'NUM_UNITS', 'INJURIES_TOTAL']]
-        df_crashes = df_crashes.rename(columns={
-            'CRASH_RECORD_ID': 'CRASH_ID',
-            'INJURIES_TOTAL': 'TOTAL_INJURIES'
-        })
-        df_crashes.to_csv(self.output().path, index=False)
+        crashes_df = extract_data(filepath=config_data['crash_filepath'],
+                                  select_cols=config_data['crash_columns_list'],
+                                  rename_cols=config_data['crash_columns_rename_dict'])
+        crashes_df.to_csv(self.output().path, index=False)
 
 
 class ExtractVehicles(luigi.Task):
@@ -32,18 +34,10 @@ class ExtractVehicles(luigi.Task):
         return luigi.LocalTarget(config_data['vehicle_filepath'])
 
     def run(self):
-        df_vehicles = pd.read_csv(self.input().path)
-        df_vehicles = df_vehicles[
-            ['CRASH_UNIT_ID', 'CRASH_RECORD_ID', 'CRASH_DATE', 'VEHICLE_ID', 'MAKE', 'MODEL', 'YEAR', 'VEHICLE_TYPE']]
-
-        df_vehicles = df_vehicles.rename(columns={
-            'CRASH_RECORD_ID': 'CRASH_ID',
-            'MAKE': 'VEHICLE_MAKE',
-            'MODEL': 'VEHICLE_MODEL',
-            'YEAR': 'VEHICLE_YEAR',
-            'VEHICLE_TYPE': 'VEHICLE_TYPE'
-        })
-        df_vehicles.to_csv(self.output().path, index=False)
+        vehicle_df = extract_data(filepath=config_data['vehicle_filepath'],
+                                  select_cols=config_data['vehicle_columns_list'],
+                                  rename_cols=config_data['vehicle_columns_rename_dict'])
+        vehicle_df.to_csv(self.output().path, index=False)
 
 
 class ExtractPeople(luigi.Task):
@@ -52,15 +46,10 @@ class ExtractPeople(luigi.Task):
         return luigi.LocalTarget(config_data['people_filepath'])
 
     def run(self):
-        df_people = pd.read_csv(self.input().path)
-        df_people = df_people[['PERSON_ID', 'CRASH_RECORD_ID', 'CRASH_DATE', 'PERSON_TYPE', 'VEHICLE_ID', 'SEX', 'AGE']]
-        df_people = df_people.rename(columns={
-            'CRASH_RECORD_ID': 'CRASH_ID',
-            'PERSON_TYPE': 'PERSON_TYPE',
-            'SEX': 'PERSON_SEX',
-            'AGE': 'PERSON_AGE'
-        })
-        df_people.to_csv(self.output().path, index=False)
+        people_df = extract_data(filepath=config_data['people_filepath'],
+                                 select_cols=config_data['people_columns_list'],
+                                 rename_cols=config_data['people_columns_rename_dict'])
+        people_df.to_csv(self.output().path, index=False)
 
 
 class TransformCrashes(luigi.Task):
@@ -72,12 +61,9 @@ class TransformCrashes(luigi.Task):
         return luigi.LocalTarget('data/transformed_crashes.csv')
 
     def run(self):
-        df_crashes = pd.read_csv(self.input().path)
-        df_crashes['CRASH_DATE'] = pd.to_datetime(df_crashes['CRASH_DATE'])
-        df_crashes = df_crashes[df_crashes['CRASH_DATE_EST_I'] != 'Y']
-        df_crashes = df_crashes[df_crashes['LATITUDE'].notnull() & df_crashes['LONGITUDE'].notnull()]
-        df_crashes = df_crashes.drop(columns=['CRASH_DATE_EST_I'])
-        df_crashes.to_csv(self.output().path, index=False)
+        crash_df = pd.read_csv(self.input().path)
+        transformed_crashes_df = transform_crash_data(crash_df)
+        transformed_crashes_df.to_csv(self.output().path, index=False)
 
 
 class TransformVehicles(luigi.Task):
@@ -88,11 +74,9 @@ class TransformVehicles(luigi.Task):
         return luigi.LocalTarget('data/transformed_vehicles.csv')
 
     def run(self):
-        df_vehicles = pd.read_csv(self.input().path)
-        df_vehicles['VEHICLE_MAKE'] = df_vehicles['VEHICLE_MAKE'].str.upper()
-        df_vehicles['VEHICLE_MODEL'] = df_vehicles['VEHICLE_MODEL'].str.upper()
-        df_vehicles = df_vehicles[df_vehicles['VEHICLE_YEAR'].notnull()]
-        df_vehicles.to_csv(self.output().path, index=False)
+        vehicle_df = pd.read_csv(self.input().path)
+        transformed_vehicle_df = transform_vehicle_data(vehicle_df)
+        transformed_vehicle_df.to_csv(self.output().path, index=False)
 
 
 class TransformPeople(luigi.Task):
@@ -104,10 +88,9 @@ class TransformPeople(luigi.Task):
         return luigi.LocalTarget('data/transformed_people.csv')
 
     def run(self):
-        df_people = pd.read_csv(self.input().path)
-        df_people = df_people[df_people['PERSON_TYPE'].isin(['DRIVER', 'PASSENGER', 'PEDESTRIAN', 'BICYCLE', 'OTHER'])]
-        df_people = df_people[df_people['PERSON_AGE'].notnull()]
-        df_people.to_csv(self.output().path, index=False)
+        people_df = pd.read_csv(self.input().path)
+        transformed_people_df = transform_people_data(people_df)
+        transformed_people_df.to_csv(self.output().path, index=False)
 
 
 class LoadCrashes(luigi.Task):
