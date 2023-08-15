@@ -8,16 +8,11 @@ with open('../../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 # Define the load process as a Bonobo graph
-def load_data(data):
+def load_data(data: list) -> object:
 
-    # Extract and transform the data
-    data = transform_data(extract_data())
-    # Step 1: Extract data
-    crashes_df = extract_data(config_data['crash_filepath'])
-    vehicle_df = extract_data(config_data['vehicle_filepath'])
-    people_df = extract_data(config_data['people_filepath'])
-    df_vehicle = data['df_vehicle']
-    df_crash = data['df_crash']
+    # Import data
+    crash_df = data[0]
+    vehicle_df = data[1]
 
     # Read the configuration file
     config = configparser.ConfigParser()
@@ -37,7 +32,7 @@ def load_data(data):
                               VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
 
     # Convert the dataframe to a list of tuples
-    data_vehicle = [tuple(x) for x in df_vehicle.values]
+    data_vehicle = [tuple(x) for x in vehicle_df.values]
 
     # Execute the Postgresql query to insert data into the vehicle table
     with conn.cursor() as cur:
@@ -49,7 +44,7 @@ def load_data(data):
                             VALUES (%s, %s, %s, %s, %s, %s);'''
 
     # Convert the dataframe to a list of tuples
-    data_crash = [tuple(x) for x in df_crash.values]
+    data_crash = [tuple(x) for x in crash_df.values]
 
     # Execute the Postgresql query to insert data into the crash table
     with conn.cursor() as cur:

@@ -16,6 +16,19 @@ crash_filepath: data/traffic_crashes.csv
 vehicle_filepath: data/traffic_crash_vehicle.csv
 people_filepath: data/traffic_crash_people.csv
 
+# Chicago Data columns
+crash_columns_list: [ 'CRASH_RECORD_ID', 'CRASH_DATE_EST_I', 'CRASH_DATE', 'CRASH_HOUR', 'CRASH_DAY_OF_WEEK', 'CRASH_MONTH',
+                 'LATITUDE', 'LONGITUDE', 'NUM_UNITS', 'INJURIES_TOTAL' ]
+vehicle_columns_list: ['CRASH_UNIT_ID', 'CRASH_RECORD_ID', 'CRASH_DATE', 'VEHICLE_ID', 'MAKE', 'MODEL', 'YEAR', 'VEHICLE_TYPE']
+people_columns_list: ['PERSON_ID', 'CRASH_RECORD_ID', 'CRASH_DATE', 'PERSON_TYPE', 'VEHICLE_ID', 'SEX', 'AGE']
+
+# Chicago Data column renames
+crash_columns_rename_dict: {'CRASH_RECORD_ID': 'CRASH_ID','INJURIES_TOTAL': 'TOTAL_INJURIES'}
+vehicle_columns_rename_dict: {'CRASH_RECORD_ID': 'CRASH_ID','MAKE': 'VEHICLE_MAKE','MODEL': 'VEHICLE_MODEL',
+                              'YEAR': 'VEHICLE_YEAR', 'VEHICLE_TYPE': 'VEHICLE_TYPE'}
+people_columns_rename_dict: {'CRASH_RECORD_ID': 'CRASH_ID', 'PERSON_TYPE': 'PERSON_TYPE',
+                             'SEX': 'PERSON_SEX','AGE': 'PERSON_AGE'}
+
 # Chicago Data output tables in PSQL
 crash_table_PSQL: chicago_dmv.Crash
 vehicle_table_PSQL: chicago_dmv.Vehicle
