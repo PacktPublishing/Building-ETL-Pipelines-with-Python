@@ -38,7 +38,7 @@ def main():
     # Config for PostgreSQL
     config = configparser.ConfigParser()
     config.read('config.ini')
-    postgre_config = 'postgresql://{user}:{password}@{host}:{port}/{database}::chicago_dmv.CRASH'.format(
+    postgre_config = 'postgresql://{user}:{password}@{host}:{port}/{database}'.format(
         host=config['POSTGRESQL']['host'],
         port=config['POSTGRESQL']['port'],
         dbname=config['POSTGRESQL']['database'],

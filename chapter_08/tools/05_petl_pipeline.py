@@ -10,7 +10,8 @@ with open('../config.yaml', 'r') as file:
 
 def load_data():
 
-    # Read the configuration file
+    # Read the Configuration File
+    import configparser
     config = configparser.ConfigParser()
     config.read('config.ini')
 
