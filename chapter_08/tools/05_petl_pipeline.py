@@ -11,7 +11,6 @@ with open('../config.yaml', 'r') as file:
 def load_data():
 
     # Read the Configuration File
-    import configparser
     config = configparser.ConfigParser()
     config.read('config.ini')
 
