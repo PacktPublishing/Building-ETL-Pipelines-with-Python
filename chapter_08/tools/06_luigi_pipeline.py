@@ -1,6 +1,5 @@
+# Import Modules
 import luigi
-import psycopg2
-import configparser
 import pandas as pd
 from chapter_08.etl.extract import extract_data
 from chapter_08.etl.transform import (
