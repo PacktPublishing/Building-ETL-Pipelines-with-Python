@@ -8,7 +8,7 @@ from chapter_08.etl.transform import (
 )
 
 # Import database configuration
-with open('../../config.yaml', 'r') as file:
+with open('../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 # Define the load_data() function as a pipeline using Odo:

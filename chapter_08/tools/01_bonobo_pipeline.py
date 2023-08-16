@@ -10,7 +10,7 @@ from chapter_08.etl.transform import (
 from chapter_08.etl.load import load_data
 
 # Import file configuration
-with open('../../config.yaml', 'r') as file:
+with open('../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 # Step 1: Extract data
