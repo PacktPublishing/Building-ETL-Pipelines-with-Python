@@ -1,12 +1,13 @@
+# Import Modules
+import yaml
 import configparser
 from metl import Pipeline
-from metl.loaders.postgresql_loader import PostgreSQLLoader
 from metl.extractors.dataframe_extractor import DataframeExtractor
 from metl.transformers.pandas_transformer import PandasTransformer
-import yaml
+from metl.loaders.postgresql_loader import PostgreSQLLoader
 
 # Import pipeline configuration
-with open('../../config.yaml', 'r') as file:
+with open('../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 # Define the load_data() function as a pipeline using the METL framework:

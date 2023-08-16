@@ -5,12 +5,12 @@ import petl as etl
 from petl.io.sources import DictSource
 
 # Import file configuration
-with open('../../config.yaml', 'r') as file:
+with open('../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 def load_data():
 
-    # Read the configuration file
+    # Read the Configuration File
     config = configparser.ConfigParser()
     config.read('config.ini')
 

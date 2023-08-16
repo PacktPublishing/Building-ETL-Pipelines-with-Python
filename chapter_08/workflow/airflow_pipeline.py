@@ -16,7 +16,7 @@ from airflow.operators.python_operator import PythonOperator
 
 
 # import pipeline configuration
-with open('../../config.yaml', 'r') as file:
+with open('../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 # Define the DAG

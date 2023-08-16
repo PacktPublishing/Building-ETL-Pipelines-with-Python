@@ -6,7 +6,7 @@ from riko.sources import dict as riko_dict
 from riko.sinks import sql as riko_sql
 
 # Import file configuration
-with open('../../config.yaml', 'r') as file:
+with open('../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 

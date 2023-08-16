@@ -1,6 +1,5 @@
+# Import Modules
 import luigi
-import psycopg2
-import configparser
 import pandas as pd
 from chapter_08.etl.extract import extract_data
 from chapter_08.etl.transform import (
@@ -13,7 +12,7 @@ from chapter_08.etl.load import load_data
 import yaml
 
 # import pipeline configuration
-with open('../../config.yaml', 'r') as file:
+with open('../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
 
