@@ -1,6 +1,8 @@
-# Import modules
+# Import Modules
 import yaml
 import bonobo
+
+# Import ETL Activities
 from chapter_08.etl.extract import extract_data
 from chapter_08.etl.transform import (
     transform_crash_data,
@@ -9,7 +11,7 @@ from chapter_08.etl.transform import (
 )
 from chapter_08.etl.load import load_data
 
-# Import file configuration
+# Import Configuration
 with open('../config.yaml', 'r') as file:
     config_data = yaml.safe_load(file)
 
