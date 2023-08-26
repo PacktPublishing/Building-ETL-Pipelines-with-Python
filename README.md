@@ -56,7 +56,7 @@ $ pipenv shell
 
 The **_Building ETL Pipelines with Python_** consists of the following chapters:
 
-| Index | Description |Code Files |
+| Index | Title | Brief Description |
 |---------|-------------|-----------|
 | Chapter 1 | [A Primer on Python and the Development Environment](chapter_01) | A brief overview of Python and setting up the development environment with an IDE and GIT.|[🔗]() |
 | Chapter 2 | [Understanding Data Pipelines and the ETL Process](chapter_02) | Overview of the ETL process, its significance, and the difference between ETL and ELT|[🔗]() |
