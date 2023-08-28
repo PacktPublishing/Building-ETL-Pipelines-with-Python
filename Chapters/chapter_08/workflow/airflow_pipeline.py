@@ -4,13 +4,13 @@ from datetime import (
     datetime,
     timedelta
 )
-from chapter_08.etl.extract import extract_data
-from chapter_08.etl.transform import (
+from Chapters.chapter_08 import extract_data
+from Chapters.chapter_08 import (
     transform_crash_data,
     transform_vehicle_data,
     transform_people_data
 )
-from chapter_08.etl.load import load_data
+from Chapters.chapter_08.etl.load import load_data
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
