@@ -1,4 +1,66 @@
 # Building ETL Pipelines with Python
+
+<a href="https://www.packtpub.com/product/building-etl-pipelines-with-python/9781804615256"><img src="https://m.media-amazon.com/images/I/61K+048+QrL._SL1233_.jpg" alt="Building ETL Pipelines with Python" height="256px" align="right"></a>
+
+This is the code repository for [Building ETL Pipelines with Python](https://www.packtpub.com/product/building-etl-pipelines-with-python/9781804615256), published by Packt.
+
+**Create and deploy enterprise-ready ETL pipelines by employing modern methods**
+
+## What is this book about?
+
+Modern extract, transform, and load (ETL) pipelines for data engineering have favored the Python language for its broad range of uses and a large assortment of tools, applications, and open source components. With its simplicity and extensive library support, Python has emerged as the undisputed choice for data processing.
+
+This book covers the following exciting features: 
+* Explore the available libraries and tools to create ETL pipelines using Python
+* Write clean and resilient ETL code in Python that can be extended and easily scaled
+* Understand the best practices and design principles for creating ETL pipelines
+* Orchestrate the ETL process and scale the ETL pipeline effectively
+* Discover tools and services available in AWS for ETL pipelines
+* Understand different testing strategies and implement them with the ETL process
+
+If you feel this book is for you, get your [copy](https://www.amazon.in/Building-ETL-Pipelines-Python-enterprise-ready/dp/1804615250/ref=sr_1_1?keywords=Building+ETL+Pipelines+with+Python&sr=8-1) today!
+
+<a href="https://www.packtpub.com/product/building-etl-pipelines-with-python/9781804615256"><img src="https://raw.githubusercontent.com/PacktPublishing/GitHub/master/GitHub.png" alt="https://www.packtpub.com/" border="5" /></a>
+
+## Instructions and Navigations
+All of the code is organized into folders.
+
+The code will look like the following:
+```
+# Merge the three dataframes into a single dataframe
+merge_01_df = pd.merge(df, df2, on='CRASH_RECORD_ID')
+all_data_df = pd.merge(merge_01_df, df3, on='CRASH_RECORD_ID')
+```
+**Following is what you need for this book:**
+If you are a data engineer or software professional looking to create enterprise-level ETL pipelines using Python, this book is for you. Fundamental knowledge of Python is a prerequisite.
+
+With the following software and hardware list you can run all code files present in the book (Chapter 1-145).
+
+### Software and Hardware List
+
+| Chapter  | Software required                                                                    | OS required                        |
+| -------- | -------------------------------------------------------------------------------------| -----------------------------------|
+|  	1-15	   |   	PyCharm 2023.2                                 			  | any OS | 		
+|  	1-15	   |   	Python version ≥ 3.6                                 			  | Any OS | 		
+|  	1-15	   |   	Jupyter Notebook 7.0.2                            			  | any OS | 		
+
+
+### Related products <Other books you may enjoy>
+* Data Engineering with Python  [[Packt]](https://www.packtpub.com/product/data-engineering-with-python/9781839214189) [[Amazon]](https://www.amazon.in/Data-Engineering-Python-datasets-pipelines/dp/183921418X/ref=sr_1_1?keywords=Data+Engineering+with+Python&sr=8-1)
+  
+* Serverless ETL and Analytics with AWS Glue  [[Packt]](https://www.packtpub.com/product/serverless-etl-and-analytics-with-aws-glue/9781800564985) [[Amazon]](https://www.amazon.in/Serverless-ETL-Analytics-AWS-Glue/dp/1800564988/ref=tmm_pap_swatch_0?_encoding=UTF8&sr=8-1)
+  
+## Get to Know the Author
+**Brij Kishore Pandey** stands as a testament to dedication, innovation, and mastery in the vast domains of software engineering, data engineering, machine learning, and architectural design. His illustrious career, spanning over 14 years, has seen him wear multiple hats, transitioning seamlessly between roles and consistently pushing the boundaries of technological advancement. He has a degree in electrical and electronics engineering. His work history includes the likes of JP Morgan Chase, American Express, 3M Company, Alaska Airlines, and Cigna Healthcare. He is currently working as a principal software engineer at Automatic Data Processing Inc. (ADP). Originally from India, he resides in Parsippany, New Jersey, with his wife and daughter.
+
+**Emily Ro Schoof** is a dedicated Data Specialist with a global perspective, showcasing her expertise as a Data Scientist and Data Engineer on international platforms. Drawing from a background rooted in healthcare and experimental design, she brings a unique perspective of expertise to her data analytic roles. Her multifaceted career ranges from working with UNICEF to design automated forecasting algorithms to identify conflict anomalies using near real-time media monitoring to serving as a Subject Matter Expert for General Assembly’s Data Engineering course content and design. She holds the strong belief that providing easy access to resources, that that merge theory and real-world applications, is the essential first step in this process.
+
+
+
+
+
+
+## NOTE
 Create Production-Ready ETL pipelines with Python and open source Libraries. The book utilizes the Pipenv environment for dependency management and PyCharm as the recommended Integrated Development Environment (IDE).
 
 ## Tables of Contents
